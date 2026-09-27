@@ -27,7 +27,7 @@ MAX_PAYLOAD_BYTES = 500 * 1024  # 500 KB cap from the testing brief
 
 # ---------- Health + identity ----------
 
-@app.get("/v1/healthz")
+@app.api_route("/v1/healthz", methods=["GET", "HEAD"])
 async def healthz():
     return {
         "status": "ok",
@@ -36,7 +36,7 @@ async def healthz():
     }
 
 
-@app.api_route("/v1/healthz", methods=["GET", "HEAD"])
+@app.get("/v1/metadata")
 async def metadata():
     return {
         "team_name": os.getenv("TEAM_NAME", "YOUR NAME"),           # set in .env
