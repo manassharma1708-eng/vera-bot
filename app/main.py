@@ -42,10 +42,12 @@ async def metadata():
         "team_name": os.getenv("TEAM_NAME", "YOUR NAME"),           # set in .env
         "team_members": [os.getenv("TEAM_NAME", "YOUR NAME")],
         "model": ", ".join(f"{p}:{m}" for p, m in configured_providers()) or "template-only",
-        "approach": "Deterministic fact-sheet extraction + LLM composer with post-validation",
+        "approach": ("Deterministic fact sheet (verified facts, one anchor signal, consent/category blockers) -> "
+                     "LLM composer with per-trigger playbooks -> rule validator with one LLM repair -> "
+                     "fact-only template fallback. Rule-first reply brain for auto-reply/opt-out/intent."),
         "contact_email": os.getenv("CONTACT_EMAIL", "you@example.com"),   # set in .env
-        "version": "0.7.0",
-        "submitted_at": "2026-04-26T08:00:00Z",
+        "version": "1.0.0",
+        "submitted_at": os.getenv("SUBMITTED_AT", "2026-09-27T00:00:00Z"),
     }
 
 
