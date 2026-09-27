@@ -36,7 +36,7 @@ async def healthz():
     }
 
 
-@app.get("/v1/metadata")
+@app.api_route("/v1/healthz", methods=["GET", "HEAD"])
 async def metadata():
     return {
         "team_name": os.getenv("TEAM_NAME", "YOUR NAME"),           # set in .env
