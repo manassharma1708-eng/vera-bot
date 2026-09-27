@@ -8,14 +8,15 @@ Composer: turns a fact sheet into the final WhatsApp message.
 Flow:
     1. build the fact sheet (app/facts.py)
     2. ask the LLM, with a prompt tuned to the trigger kind
-    3. if the LLM is unavailable or returns junk -> safe template fallback
-The validator (Step 6) will sit between 2 and 3.
+    3. validate it (app/validator.py); if it breaks a rule, send the problems back for ONE repair
+    4. if it still fails (or the LLM is down) -> deterministic fact-only template
 """
 import json
 import re
 
 from app.facts import build_facts
 from app.llm import complete_json
+from app.validator import validate
 
 VALID_CTAS = {"binary_yes_no", "binary_confirm_cancel", "multi_choice_slot", "open_ended", "none"}
 
@@ -37,7 +38,7 @@ KIND_PLAYBOOK = {
     "winback_eligible": "Acknowledge the gap without blame. Anchor on what they are losing (exact numbers given). Offer to restart with one step.",
     "curious_ask_due": "ASK THE MERCHANT a specific, easy question about their business this week (make a smart guess from their offers/data). Offer to turn the answer into a Google post + ready reply. No pitch.",
     "gbp_unverified": "Explain the concrete benefit using the given uplift number. Say the verification path. Offer to walk them through it now.",
-    "ipl_match_today": "Use the match, venue, time and weeknight flag. Add operator judgment (weeknight vs weekend behaviour) WITHOUT inventing statistics. Tie to their existing offer. Offer ready-made banner/story.",
+    "ipl_match_today": "Use the match, venue and time. Add operator judgment WITHOUT inventing statistics: if 'is weeknight: no' (weekend match), many fans watch at home, so push DELIVERY with their existing offer rather than a dine-in match-night promo; on a weeknight, a dine-in screening push can work. Offer a ready banner/story.",
     "active_planning_intent": "The merchant already said yes to exploring this. Do NOT ask qualifying questions. Deliver a concrete starter draft built ONLY from their real offers/prices, and ask for one edit or a go-ahead.",
     "category_seasonal": "Name the seasonal demand shifts exactly as given. Recommend one shelf/offer action. Offer to draft it.",
     "recall_due": "Customer-facing, from the clinic. Name the recall and time since last visit. Offer the exact available slots given. Price only from the merchant's active offers. Slot choice CTA is fine.",
@@ -63,6 +64,11 @@ HARD RULES (breaking any of these is a failure):
 7. "Category offer ideas" are suggestions — never say the merchant already runs them.
 8. Don't expose internal field names (like ctr_below_peer_median, delta_7d, placeholder). Write like a human.
 9. Keep it tight: 2-4 short sentences, under 450 characters unless a draft/plan is being delivered.
+10. Don't invent NON-number details either: schedules or timings ("evening sessions", "morning delivery"),
+    stock ("fresh batch"), class formats, events, seasons, awards, reviews. If it isn't in the fact sheet, don't say it.
+11. Category-wide trends and demand shifts are MARKET-WIDE ("across pharmacies in your area"), never "at your store".
+12. Vera is female. In Hindi/Hinglish use feminine verb forms: "karti hoon", "kar deti hoon", "bhej deti hoon".
+13. If writing Hinglish, keep the WHOLE message Hinglish, including the final question.
 
 OUTPUT: only a JSON object, no other text:
 {"body": "...", "cta": "binary_yes_no|binary_confirm_cancel|multi_choice_slot|open_ended|none",
@@ -90,10 +96,15 @@ def build_prompt(f: dict) -> str:
               "Speak as the business (e.g. 'Dr. Meera's clinic here'). Never mention Vera, magicpin, metrics or peers."
               if f["send_as"] == "merchant_on_behalf" else
               "MERCHANT-FACING: Vera talking to the business owner, peer-to-peer, like a sharp growth advisor.")
+    playbook = KIND_PLAYBOOK.get(f["kind"], "Lead with the anchor, make it specific to this merchant, one easy next step.")
+    if f.get("is_placeholder"):
+        playbook = ("This trigger came with NO event details. Do NOT mention the trigger's event at all "
+                    f"(no {f['kind'].replace('_', ' ')}, no festival/milestone/season you have no data for). "
+                    "Build the whole message on the ANCHOR fact from this merchant's own data, and offer the next step below.")
     lines = [
         facing,
         f"TRIGGER KIND: {f['kind']} (urgency {f.get('urgency')}/5)",
-        f"PLAYBOOK: {KIND_PLAYBOOK.get(f['kind'], 'Lead with the anchor, make it specific to this merchant, one easy next step.')}",
+        f"PLAYBOOK: {playbook}",
         f"ADDRESS THEM AS: {f['salutation']}",
         f"LANGUAGE: {_language_rule(f['language'])}",
         f"CATEGORY: {f.get('category')} | VOICE tone: {voice.get('tone')} | register: {voice.get('register')}",
@@ -115,22 +126,58 @@ def build_prompt(f: dict) -> str:
 
 def _plain_anchor(anchor: str) -> str:
     text = re.sub(r"^(WHY NOW \([^)]*\):|DIGEST ITEM:)\s*", "", anchor or "").strip()
-    return text.rstrip(".")
+    text = re.sub(r"\(source: [^)]*\)", "", text)
+    return text.replace("; ", ", ").strip().rstrip(".,")
+
+
+def _pct(v) -> str:
+    try:
+        return f"{abs(round(float(v) * 100))}%"
+    except (TypeError, ValueError):
+        return str(v)
 
 
 def fallback_message(f: dict) -> dict:
-    """Deterministic, fact-only message used when the LLM is unavailable."""
+    """
+    Deterministic, fact-only message used when the LLM is unavailable or its
+    output can't be repaired. Uses only values that exist in the contexts.
+    """
     name = f["salutation"]
-    anchor = _plain_anchor(f["anchor"])
-    if f["send_as"] == "merchant_on_behalf":
-        business = next((l.split(": ", 1)[1] for l in f["facts"] if l.startswith("Business: ")), "the team")
-        body = (f"Hi {name}, {business} here. {anchor}. "
-                f"Would you like us to book a slot for you? Reply YES and we'll share the options.")
-    else:
-        body = (f"{name}, quick one — {anchor}. "
-                f"Want me to {f['next_action']}? Reply YES and I'll start.")
-    return {"body": body, "cta": "binary_yes_no", "topic": f["kind"].replace("_", " "),
-            "rationale": f"Template fallback (LLM unavailable); anchored on: {anchor[:80]}"}
+    p = f.get("trigger_payload") or {}
+    item = f.get("digest_item") or {}
+    kind = f["kind"]
+    ask = f"Want me to {f['next_action']}? Reply YES and I'll start."
+    body = None
+
+    if item.get("title"):
+        body = f"{name}, worth a look: {item['title']} ({item.get('source', 'this week')}). "
+        if item.get("actionable"):
+            body += item["actionable"].rstrip(".") + ". "
+        body += ask
+    elif kind in ("perf_dip", "perf_spike") and p.get("metric") and p.get("delta_pct") is not None:
+        direction = "dropped" if p["delta_pct"] < 0 else "jumped"
+        body = f"{name}, your {p['metric']} {direction} {_pct(p['delta_pct'])} in the last {p.get('window', '7d')}. {ask}"
+    elif kind == "competitor_opened" and p.get("competitor_name"):
+        body = (f"{name}, heads-up: {p['competitor_name']} opened {p.get('distance_km', 'nearby')} km away"
+                f"{' with ' + p['their_offer'] if p.get('their_offer') else ''}. {ask}")
+    elif kind == "renewal_due" and p.get("days_remaining"):
+        body = f"{name}, your {p.get('plan', '')} plan has {p['days_remaining']} days left. {ask}".replace("  ", " ")
+    elif kind == "milestone_reached" and p.get("value_now"):
+        body = (f"{name}, you're at {p['value_now']} {str(p.get('metric', '')).replace('_', ' ')}"
+                f"{' — just short of ' + str(p['milestone_value']) if p.get('milestone_value') else ''}. {ask}")
+    elif kind == "curious_ask_due":
+        body = (f"{name}, quick question — which service are customers asking for most this week? "
+                f"I'll turn your answer into a Google post and a ready WhatsApp reply.")
+
+    if body is None and f["send_as"] == "merchant_on_behalf":
+        business = f.get("business_name") or "the team"
+        body = f"Hi {name}, {business} here. We'd love to see you again soon — reply YES and we'll share the next available slots."
+    if body is None:
+        body = f"{name}, quick one — {_plain_anchor(f['anchor'])}. {ask}"
+
+    cta = "open_ended" if kind == "curious_ask_due" else "binary_yes_no"
+    return {"body": body, "cta": cta, "topic": kind.replace("_", " "),
+            "rationale": f"Deterministic fact-only template; anchored on: {_plain_anchor(f['anchor'])[:90]}"}
 
 
 # ------------------------------------------------------------------ main entry
@@ -140,13 +187,34 @@ def _template_params(salutation: str, body: str) -> list[str]:
     return [salutation, " ".join(sentences[:-1]) or body, sentences[-1] if len(sentences) > 1 else ""]
 
 
-async def compose(category: dict, merchant: dict, trigger: dict, customer: dict | None = None,
-                  facts: dict | None = None) -> dict:
-    f = facts or build_facts(category, merchant, trigger, customer)
-    data, source = await complete_json(SYSTEM_PROMPT, build_prompt(f))
+def _repair_prompt(base_prompt: str, previous: dict, problems: list[str]) -> str:
+    return (base_prompt + "\n\nYOUR PREVIOUS DRAFT:\n" + json.dumps(previous, ensure_ascii=False)
+            + "\n\nIT BROKE THESE RULES — fix every one and return the corrected JSON:\n"
+            + "\n".join(f"- {p}" for p in problems))
 
-    if not isinstance(data, dict) or not str(data.get("body", "")).strip():
-        data, source = fallback_message(f), f"template ({source})"
+
+async def compose(category: dict, merchant: dict, trigger: dict, customer: dict | None = None,
+                  facts: dict | None = None, avoid_bodies: list[str] | None = None) -> dict:
+    f = facts or build_facts(category, merchant, trigger, customer)
+    prompt = build_prompt(f)
+    history = []   # (source, problems) for each attempt, for the rationale/debugging
+
+    data, source = await complete_json(SYSTEM_PROMPT, prompt)
+    problems = validate(data.get("body", ""), data.get("cta", ""), f, avoid_bodies) if isinstance(data, dict) else ["no output"]
+    history.append((source, problems))
+
+    if problems and isinstance(data, dict):
+        # One repair attempt: send the exact problems back to the LLM
+        fixed, source2 = await complete_json(SYSTEM_PROMPT, _repair_prompt(prompt, data, problems))
+        if isinstance(fixed, dict):
+            problems2 = validate(fixed.get("body", ""), fixed.get("cta", ""), f, avoid_bodies)
+            history.append((source2, problems2))
+            if not problems2:
+                data, source, problems = fixed, f"{source2} (repaired)", []
+
+    if problems:
+        data = fallback_message(f)
+        source = f"template (after: {history[-1][0][:80]})"
 
     body = str(data["body"]).strip()
     cta = data.get("cta") if data.get("cta") in VALID_CTAS else "binary_yes_no"
@@ -163,5 +231,6 @@ async def compose(category: dict, merchant: dict, trigger: dict, customer: dict 
         "topic": str(data.get("topic") or f["kind"].replace("_", " ")),
         "next_action": f["next_action"],
         "source": source,
+        "validation": [{"source": s, "problems": p} for s, p in history],
         "facts": f,
     }

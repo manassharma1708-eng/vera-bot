@@ -61,12 +61,17 @@ async def main():
         print(f"\n{test_id}  [{msg['facts']['kind']}] -> {msg['send_as']}  ({secs:.1f}s, {msg['source'][:60]})")
         print(f"  BODY: {msg['body']}")
         print(f"  CTA:  {msg['cta']}   RATIONALE: {msg['rationale'][:140]}")
+        first = msg["validation"][0]["problems"] if msg.get("validation") else []
+        if first:
+            print(f"  FIXED BY VALIDATOR: {'; '.join(first)[:220]}")
         saved[test_id] = {k: v for k, v in msg.items() if k != "facts"}
 
     Path("scripts/compose_output.json").write_text(json.dumps(saved, indent=2, ensure_ascii=False), encoding="utf-8")
-    llm = sum(1 for m in saved.values() if "source" in m and not m["source"].startswith("template"))
-    tmpl = sum(1 for m in saved.values() if "source" in m and m["source"].startswith("template"))
-    print(f"\nDone: {llm} written by LLM, {tmpl} template fallbacks, "
+    sources = [m["source"] for m in saved.values() if "source" in m]
+    clean = sum(1 for s in sources if not s.startswith("template") and "repaired" not in s)
+    repaired = sum(1 for s in sources if "repaired" in s)
+    tmpl = sum(1 for s in sources if s.startswith("template"))
+    print(f"\nDone: {clean} passed first time, {repaired} repaired by validator, {tmpl} template fallbacks, "
           f"{sum(1 for m in saved.values() if 'skipped' in m)} skipped. Saved to scripts/compose_output.json")
 
 

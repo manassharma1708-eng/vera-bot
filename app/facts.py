@@ -291,9 +291,30 @@ def build_facts(category: dict | None, merchant: dict | None,
     candidates.sort(key=lambda c: -c[0])
     anchor = candidates[0][1] if candidates else (lines[0] if lines else "")
 
+    # ---- placeholder trigger: the "why now" is really the anchor, so the next action must match it
+    next_action = NEXT_ACTION.get(kind, "prepare the next step for you")
+    if placeholder:
+        a = anchor.lower()
+        if "not verified" in a:
+            next_action = "walk you through Google verification step by step"
+        elif "no active offers" in a:
+            next_action = "set up one strong service-at-price offer on your profile"
+        elif "review theme" in a:
+            next_action = "draft a reply template for those reviews and one fix-it post"
+        elif "ctr is" in a:
+            next_action = "fix the top 2 things that stop profile visitors from calling"
+        elif "changed -" in a:
+            next_action = "draft a fresh Google post and offer to win back that traffic"
+        elif "changed +" in a:
+            next_action = "draft a follow-up post while the momentum lasts"
+        elif "subscription" in a:
+            next_action = "set up the renewal so there's no gap in your listing"
+        elif is_customer_facing:
+            next_action = "share the next available slots"
+
     # ---- every number the message may legally contain
     allowed = set()
-    for line in lines:
+    for line in lines + [next_action]:
         allowed |= numbers_in(line)
 
     return {
@@ -308,9 +329,11 @@ def build_facts(category: dict | None, merchant: dict | None,
         "anchor": anchor,
         "facts": lines,
         "digest_item": digest_item,
-        "next_action": NEXT_ACTION.get(kind, "prepare the next step for you"),
+        "next_action": next_action,
         "suppression_key": trigger.get("suppression_key") or f"{kind}:{merchant.get('merchant_id')}",
         "is_placeholder": placeholder,
+        "trigger_payload": {} if placeholder else payload,
+        "business_name": ident.get("name"),
         "send_blockers": blockers,
         "warnings": warnings,
         "allowed_numbers": sorted(allowed),
