@@ -137,6 +137,7 @@ async def reply(body: ReplyBody):
         result = handle_reply(body.conversation_id, body.merchant_id, body.customer_id,
                               body.from_role, body.message, body.turn_number)
         conv = conversations.get_or_create(body.conversation_id)
+        conv["last_activity"] = body.received_at or conv.get("last_activity")
 
         # Open question / engaged reply: try a grounded LLM answer, keep the rule-based one as fallback
         intent = result.pop("_llm_upgrade", None)

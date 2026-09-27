@@ -10,7 +10,7 @@ Decision rules (in order):
   3. never message an opted-out merchant, or one we were asked to wait on
   4. respect the fact sheet's blockers (consent, trigger/category mismatch)
   5. don't open a second thread with someone who has an open conversation,
-     unless the new trigger is urgent (4-5)
+     unless the new trigger is urgent (4-5) or that thread has been quiet for 30+ minutes
   6. ONE message per recipient per tick: the highest-priority trigger wins
   7. at most 20 actions per tick
 """
@@ -28,6 +28,17 @@ from app.timeutil import parse_iso
 MAX_ACTIONS = 20
 TICK_BUDGET_SECONDS = float(os.getenv("TICK_BUDGET_SECONDS", "11"))   # judge_simulator times out at 15s
 COMPOSE_CONCURRENCY = int(os.getenv("COMPOSE_CONCURRENCY", "8"))
+STALE_CONVERSATION_MINUTES = float(os.getenv("STALE_CONVERSATION_MINUTES", "30"))
+
+
+def _is_blocking(conv: dict | None, now_dt, urgency: int) -> bool:
+    """An open conversation blocks a new thread unless the new trigger is urgent or the thread went quiet."""
+    if not conv or urgency >= 4:
+        return False
+    last = parse_iso(conv.get("last_activity"))
+    if last and now_dt and (now_dt - last).total_seconds() >= STALE_CONVERSATION_MINUTES * 60:
+        return False
+    return True
 
 
 def _priority(trigger: dict, facts: dict) -> tuple:
@@ -87,7 +98,7 @@ def select_candidates(now: str, trigger_ids: list[str]) -> tuple[list[dict], lis
             skipped.append(f"{trigger_id}: blocked ({facts['send_blockers'][0]})")
             continue
         recipient = customer_id or merchant.get("merchant_id")
-        if conversations.active_conversation(recipient) and int(trigger.get("urgency") or 0) < 4:
+        if _is_blocking(conversations.active_conversation(recipient), now_dt, int(trigger.get("urgency") or 0)):
             skipped.append(f"{trigger_id}: conversation already open with {recipient}")
             continue
 
@@ -146,7 +157,7 @@ async def run_tick(now: str, trigger_ids: list[str]) -> dict:
         conv_id = _conversation_id(merchant_id, customer_id, trigger["id"])
 
         conversations.start(conv_id, merchant_id, customer_id, trigger["id"], trigger.get("kind"),
-                            msg["topic"], msg["next_action"], msg["body"])
+                            msg["topic"], msg["next_action"], msg["body"], now=now)
         conversations.mark_sent(msg["suppression_key"])
         conversations.merchant_flags(merchant_id)["sent_bodies"].append(msg["body"])
 

@@ -34,6 +34,17 @@ def human(s: str) -> str:
     return str(s).replace("_", " ").strip()
 
 
+def _pretty_time(value: str) -> str | None:
+    """'2026-04-26T19:30:00+05:30' -> 'Sun 26 Apr, 7:30 PM'"""
+    from datetime import datetime
+    try:
+        dt = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    time_part = dt.strftime("%I:%M %p").lstrip("0")
+    return f"{dt.strftime('%a')} {dt.day} {dt.strftime('%b')}, {time_part}"
+
+
 NUMBER_RE = re.compile(r"\d+(?:[.,]\d+)*")
 
 
@@ -227,6 +238,11 @@ def build_facts(category: dict | None, merchant: dict | None,
                 value = pct(value, signed=True)
             elif isinstance(value, dict):
                 value = ", ".join(f"{human(k)} {v}" for k, v in value.items())
+            elif isinstance(value, (int, float)) and re.search(r"amount|price|fee|cost|mrp", key):
+                value = f"₹{num(value)}"                      # money is always shown as ₹, never a bare number
+            elif isinstance(value, str) and key.endswith("_iso") and _pretty_time(value):
+                value = _pretty_time(value)
+                key = key[:-4]
             else:
                 value = human(value)
             parts.append(f"{human(key)}: {value}")

@@ -24,6 +24,7 @@ def _new_conversation(conv_id: str) -> dict:
         "their_messages": [],   # everything they've sent
         "status": "active",     # active | waiting | ended
         "offtopic_count": 0,
+        "last_activity": None,  # ISO time of our last send or their last reply
     }
 
 
@@ -35,14 +36,14 @@ def get_or_create(conv_id: str) -> dict:
 
 
 def start(conv_id: str, merchant_id, customer_id, trigger_id, trigger_kind,
-          topic, next_action, first_body):
+          topic, next_action, first_body, now: str | None = None):
     """Called by /v1/tick (Step 7) when the bot opens a new conversation."""
     conv = get_or_create(conv_id)
     with _lock:
         conv.update({
             "merchant_id": merchant_id, "customer_id": customer_id,
             "trigger_id": trigger_id, "trigger_kind": trigger_kind,
-            "topic": topic, "next_action": next_action,
+            "topic": topic, "next_action": next_action, "last_activity": now,
         })
         conv["bot_bodies"].append(first_body)
     return conv

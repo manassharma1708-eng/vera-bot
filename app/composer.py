@@ -33,12 +33,12 @@ KIND_PLAYBOOK = {
     "festival_upcoming": "Tie the festival date to the merchant's offer. If the event is far away, frame it as early planning (e.g. booking calendar, packages) rather than a promo push.",
     "review_theme_emerged": "Quote the theme and count exactly. Treat it as fixable. Offer a reply template + one fix. Empathetic, practical.",
     "milestone_reached": "Name the milestone and how close they are. Social proof. Offer a small push to cross it (e.g. review nudge to happy customers).",
-    "renewal_due": "Days remaining and amount exactly as given. Loss aversion: what stops if it lapses, anchored on their own numbers. Single yes/no to renew.",
+    "renewal_due": "Lead with days remaining and the renewal amount exactly as given. Loss aversion using THEIR OWN numbers (e.g. the views/calls/leads their listing brought in the last 30 days) — that's what's at stake if it lapses. Don't claim specific features stop unless the facts say so. End with a one-tap 'Reply YES to renew'.",
     "dormant_with_vera": "Don't guilt them. Reciprocity: lead with ONE useful finding from their data. Very low-effort ask.",
     "winback_eligible": "Acknowledge the gap without blame. Anchor on what they are losing (exact numbers given). Offer to restart with one step.",
-    "curious_ask_due": "ASK THE MERCHANT a specific, easy question about their business this week (make a smart guess from their offers/data). Offer to turn the answer into a Google post + ready reply. No pitch.",
+    "curious_ask_due": "ASK THE MERCHANT one specific, easy question about this week. Make it concrete: name 1-2 of their ACTUAL active offers with prices as a smart guess (e.g. 'is it the Haircut @ ₹99 or the Hair Spa @ ₹499?') and anchor on ONE real number from their data (e.g. calls up X% this week). Offer to turn the answer into a Google post + ready WhatsApp reply. No pitch, one-word answer possible.",
     "gbp_unverified": "Explain the concrete benefit using the given uplift number. Say the verification path. Offer to walk them through it now.",
-    "ipl_match_today": "Use the match, venue and time. Add operator judgment WITHOUT inventing statistics: if 'is weeknight: no' (weekend match), many fans watch at home, so push DELIVERY with their existing offer rather than a dine-in match-night promo; on a weeknight, a dine-in screening push can work. Offer a ready banner/story.",
+    "ipl_match_today": "Use the match, venue and the exact start time. You MUST check the merchant's offers against the match day: if their offer only runs on certain days and the match is outside them, say so explicitly in the message (e.g. 'aapka BOGO sirf Tue-Thu hai') and propose a match-night delivery special instead — that judgment is the point of the message. If reviews complain about late delivery, factor that in (e.g. promise realistic delivery times). Add operator judgment WITHOUT inventing statistics: if 'is weeknight: no' (weekend match), many fans watch at home, so push DELIVERY (using an existing offer only if it is valid that day) rather than a dine-in match-night promo; on a weeknight, a dine-in screening push can work. Offer a ready banner/story.",
     "active_planning_intent": "The merchant already said yes to exploring this. Do NOT ask qualifying questions. Deliver a concrete starter draft built ONLY from their real offers/prices, and ask for one edit or a go-ahead.",
     "category_seasonal": "Name the seasonal demand shifts exactly as given. Recommend one shelf/offer action. Offer to draft it.",
     "recall_due": "Customer-facing, from the clinic. Name the recall and time since last visit. Offer the exact available slots given. Price only from the merchant's active offers. Slot choice CTA is fine.",
@@ -69,6 +69,13 @@ HARD RULES (breaking any of these is a failure):
 11. Category-wide trends and demand shifts are MARKET-WIDE ("across pharmacies in your area"), never "at your store".
 12. Vera is female. In Hindi/Hinglish use feminine verb forms: "karti hoon", "kar deti hoon", "bhej deti hoon".
 13. If writing Hinglish, keep the WHOLE message Hinglish, including the final question.
+14. ENGAGEMENT: state the stake with one real number (what they gain or lose), and make the final ask answerable
+    with ONE word (e.g. "Reply YES", "Haan bolo?"). Offer to do the work for them.
+16. Respect offer limits: if an offer is restricted to certain days/times (e.g. "(Tue-Thu)"), never suggest using it outside them.
+17. Mention the exact time/date of an event when the facts give it (e.g. "7:30 PM tonight").
+18. Make every number verifiable: say where it comes from and its time window
+    ("180 delivery orders in the last 30 days", "per DCI circular", "on your Google profile"), never a bare number.
+15. Write drops as words, not signs: "calls 21% gir gaye" / "calls are down 21%" (never "-21% gir gaye").
 
 OUTPUT: only a JSON object, no other text:
 {"body": "...", "cta": "binary_yes_no|binary_confirm_cancel|multi_choice_slot|open_ended|none",
@@ -179,7 +186,11 @@ def fallback_message(f: dict) -> dict:
         body = (f"{name}, heads-up: {p['competitor_name']} opened {p.get('distance_km', 'nearby')} km away"
                 f"{' with ' + p['their_offer'] if p.get('their_offer') else ''}. {ask}")
     elif kind == "renewal_due" and p.get("days_remaining"):
-        body = f"{name}, your {p.get('plan', '')} plan has {p['days_remaining']} days left. {ask}".replace("  ", " ")
+        amount = f" (renewal ₹{p['renewal_amount']:,})" if isinstance(p.get("renewal_amount"), (int, float)) else ""
+        stake = next((l.replace("Last 30 days: ", "") for l in f["facts"] if l.startswith("Last 30 days: ")), None)
+        body = (f"{name}, your {p.get('plan', '')} plan has {p['days_remaining']} days left{amount}."
+                f"{' In the last 30 days your listing brought ' + stake + ' — keep that running.' if stake else ''}"
+                f" Reply YES and I'll set up the renewal.").replace("  ", " ")
     elif kind == "milestone_reached" and p.get("value_now"):
         body = (f"{name}, you're at {p['value_now']} {str(p.get('metric', '')).replace('_', ' ')}"
                 f"{' — just short of ' + str(p['milestone_value']) if p.get('milestone_value') else ''}. {ask}")
@@ -192,6 +203,8 @@ def fallback_message(f: dict) -> dict:
                 f"Reply YES and I'll share it here.")
     elif kind == "ipl_match_today" and p.get("match"):
         weekend = p.get("is_weeknight") is False
+        if offer and re.search(r"\b(Mon|Tue|Wed|Thu|Fri|Sat|Sun)", offer):
+            offer = None     # day-restricted offer: don't suggest it on a match day it may not cover
         body = (f"{name}, {p['match']} tonight{' at ' + p['venue'] if p.get('venue') else ''}. "
                 f"{'Weekend match, so most fans will watch at home — a delivery push makes sense' if weekend else 'Good night for a match-night push'}"
                 f"{' with your ' + offer if offer else ''}. {ask}")
@@ -240,6 +253,16 @@ def fallback_message(f: dict) -> dict:
 
 # ------------------------------------------------------------------ main entry
 
+_DROP_WORDS = r"(gir|kam|ghat|down|drop|dropped|fell|fall|decline|declined|dip)"
+
+
+def _tidy(body: str) -> str:
+    """Fix double negatives such as 'calls -21% gir gaye' -> 'calls 21% gir gaye'."""
+    body = re.sub(rf"-(\d+(?:\.\d+)?%)(\s+\w*\s*{_DROP_WORDS})", r"\1\2", body, flags=re.I)
+    body = re.sub(rf"({_DROP_WORDS}\w*\s+(?:by\s+)?)-(\d)", r"\1\3", body, flags=re.I)
+    return body
+
+
 def _template_params(salutation: str, body: str) -> list[str]:
     sentences = re.split(r"(?<=[.!?])\s+", body.strip())
     return [salutation, " ".join(sentences[:-1]) or body, sentences[-1] if len(sentences) > 1 else ""]
@@ -274,7 +297,7 @@ async def compose(category: dict, merchant: dict, trigger: dict, customer: dict 
         data = fallback_message(f)
         source = f"template (after: {history[-1][0][:80]})"
 
-    body = str(data["body"]).strip()
+    body = _tidy(str(data["body"]).strip())
     cta = data.get("cta") if data.get("cta") in VALID_CTAS else "binary_yes_no"
     prefix = "merchant" if f["send_as"] == "merchant_on_behalf" else "vera"
 

@@ -57,6 +57,7 @@ def validate(body: str, cta: str, facts: dict, avoid_bodies: list[str] | None = 
     # 1b. Prices and percentages must match a price / percentage in the facts (stops coincidental matches)
     fact_text = " ".join(facts.get("facts", [])) + " " + str(facts.get("next_action", ""))
     fact_rupees = {_norm(n) for n in re.findall(r"₹\s?(\d[\d,]*(?:\.\d+)?)", fact_text)}
+    fact_rupees |= {_norm(n) for n in re.findall(r"(?:amount|price|fee|cost|mrp|rs\.?)\s*:?\s*(\d[\d,]*)", fact_text, re.I)}
     fact_pcts = {_norm(n) for n in re.findall(r"(\d+(?:\.\d+)?)\s?%", fact_text)}
     fact_pcts |= {_norm(n) for n in re.findall(r"[+-](\d+)(?=\b)", fact_text)}      # e.g. "ORS demand +40"
     bad_rupees = sorted({_norm(n) for n in re.findall(r"₹\s?(\d[\d,]*(?:\.\d+)?)", text)} - fact_rupees)

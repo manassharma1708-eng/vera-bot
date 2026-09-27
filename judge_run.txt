@@ -1,0 +1,160 @@
+
+[95m[1m======================================================================[0m
+[95m[1m                  magicpin AI Challenge — LLM Judge                   [0m
+[95m[1m======================================================================[0m
+
+[94m[INFO][0m LLM Provider: Gemini (gemini-3.1-flash-lite)
+[94m[INFO][0m Testing LLM connection...
+[92m[PASS][0m LLM connected successfully
+
+[95m[1m======================================================================[0m
+[95m[1m                     LLM JUDGE — FULL_EVALUATION                      [0m
+[95m[1m======================================================================[0m
+
+[94m[INFO][0m Bot: http://localhost:8080
+[94m[INFO][0m LLM: Gemini (gemini-3.1-flash-lite)
+[94m[INFO][0m Loaded: 5 categories, 10 merchants, 25 triggers
+
+[96m[1m--- WARMUP ---[0m
+
+[92m[PASS][0m healthz (2ms)
+[92m[PASS][0m metadata — Team: Manas Sharma, Model: gemini:gemini-flash-latest, gemini:gemini-3.1-flash-lite, groq:openai/gpt-oss-120b, groq:openai/gpt-oss-20b
+
+[96m[1m--- CONTEXT PUSH ---[0m
+
+  [PASS] category/salons
+  [PASS] category/dentists
+  [PASS] category/gyms
+  [PASS] category/restaurants
+  [PASS] category/pharmacies
+  [PASS] merchant/001
+  [PASS] merchant/002
+  [PASS] merchant/003
+  [PASS] merchant/004
+  [PASS] merchant/005
+
+[96m[1m--- FULL EVALUATION ---[0m
+
+[92m[PASS][0m All contexts pushed
+
+[96m[1m--- SCORING COMPOSITIONS ---[0m
+
+[94m[INFO][0m Batch 1: 2 actions (2872ms)
+[35m[LLM][0m Analyzing message...
+
+[96mMessage:[0m "Dr. Bharat, aapke Pro plan ka renewal 12 days mein..."
+  Specificity            [[92m██████████████████[2m░░[0m] [92m 9/10[0m
+  Category Fit           [[92m████████████████[2m░░░░[0m] [92m 8/10[0m
+  Merchant Fit           [[92m██████████████████[2m░░[0m] [92m 9/10[0m
+  Decision Quality       [[92m████████████████[2m░░░░[0m] [92m 8/10[0m
+  Engagement             [[92m██████████████[2m░░░░░░[0m] [92m 7/10[0m
+
+  [1mTOTAL: 41/50[0m
+[35m[LLM][0m Analyzing message...
+
+[96mMessage:[0m "Dr. Meera, DCI circular dated 2026-11-04 has revis..."
+  Specificity            [[92m████████████████████[2m[0m] [92m10/10[0m
+  Category Fit           [[92m████████████████████[2m[0m] [92m10/10[0m
+  Merchant Fit           [[92m██████████████████[2m░░[0m] [92m 9/10[0m
+  Decision Quality       [[92m██████████████████[2m░░[0m] [92m 9/10[0m
+  Engagement             [[92m██████████████████[2m░░[0m] [92m 9/10[0m
+
+  [1mTOTAL: 47/50[0m
+[94m[INFO][0m Batch 2: 3 actions (2370ms)
+[35m[LLM][0m Analyzing message...
+
+[96mMessage:[0m "Suresh, aaj DC vs MI ka match 7:30 PM par hai, aur..."
+  Specificity            [[92m████████████████[2m░░░░[0m] [92m 8/10[0m
+  Category Fit           [[92m████████████████[2m░░░░[0m] [92m 8/10[0m
+  Merchant Fit           [[92m██████████████[2m░░░░░░[0m] [92m 7/10[0m
+  Decision Quality       [[93m████████████[2m░░░░░░░░[0m] [93m 6/10[0m
+  Engagement             [[92m██████████████[2m░░░░░░[0m] [92m 7/10[0m
+
+  [1mTOTAL: 36/50[0m
+[35m[LLM][0m Analyzing message...
+
+[96mMessage:[0m "Anjali, aapke salon ke calls pichle 7 dino mein 30..."
+  Specificity            [[92m██████████████████[2m░░[0m] [92m 9/10[0m
+  Category Fit           [[92m████████████████[2m░░░░[0m] [92m 8/10[0m
+  Merchant Fit           [[92m██████████████████[2m░░[0m] [92m 9/10[0m
+  Decision Quality       [[92m██████████████[2m░░░░░░[0m] [92m 7/10[0m
+  Engagement             [[92m████████████████[2m░░░░[0m] [92m 8/10[0m
+
+  [1mTOTAL: 41/50[0m
+[35m[LLM][0m Analyzing message...
+
+[96mMessage:[0m "Lakshmi, aapke salon par calls last 7 days mein 20..."
+  Specificity            [[92m████████████████[2m░░░░[0m] [92m 8/10[0m
+  Category Fit           [[92m██████████████████[2m░░[0m] [92m 9/10[0m
+  Merchant Fit           [[92m██████████████████[2m░░[0m] [92m 9/10[0m
+  Decision Quality       [[92m██████████████████[2m░░[0m] [92m 9/10[0m
+  Engagement             [[92m████████████████[2m░░░░[0m] [92m 8/10[0m
+
+  [1mTOTAL: 43/50[0m
+[94m[INFO][0m Batch 3: 2 actions (8087ms)
+[35m[LLM][0m Analyzing message...
+
+[96mMessage:[0m "Suresh, corporate bulk orders ke liye hum aapke ₹1..."
+  Specificity            [[92m████████████████[2m░░░░[0m] [92m 8/10[0m
+  Category Fit           [[92m██████████████████[2m░░[0m] [92m 9/10[0m
+  Merchant Fit           [[92m██████████████████[2m░░[0m] [92m 9/10[0m
+  Decision Quality       [[92m██████████████████[2m░░[0m] [92m 9/10[0m
+  Engagement             [[92m████████████████[2m░░░░[0m] [92m 8/10[0m
+
+  [1mTOTAL: 43/50[0m
+[35m[LLM][0m Analyzing message...
+
+[96mMessage:[0m "Karthik, aapke gym ke views last 7 days mein 30% g..."
+  Specificity            [[92m██████████████████[2m░░[0m] [92m 9/10[0m
+  Category Fit           [[92m████████████████[2m░░░░[0m] [92m 8/10[0m
+  Merchant Fit           [[92m██████████████████[2m░░[0m] [92m 9/10[0m
+  Decision Quality       [[92m██████████████████[2m░░[0m] [92m 9/10[0m
+  Engagement             [[92m████████████████[2m░░░░[0m] [92m 8/10[0m
+
+  [1mTOTAL: 43/50[0m
+[94m[INFO][0m Batch 4: 2 actions (3858ms)
+[35m[LLM][0m Analyzing message...
+
+[96mMessage:[0m "Ramesh, CDSCO ne April 2026 ke alert mein MfrZ ke ..."
+  Specificity            [[92m██████████████████[2m░░[0m] [92m 9/10[0m
+  Category Fit           [[92m████████████████████[2m[0m] [92m10/10[0m
+  Merchant Fit           [[92m████████████████[2m░░░░[0m] [92m 8/10[0m
+  Decision Quality       [[92m██████████████████[2m░░[0m] [92m 9/10[0m
+  Engagement             [[92m██████████████████[2m░░[0m] [92m 9/10[0m
+
+  [1mTOTAL: 45/50[0m
+[35m[LLM][0m Analyzing message...
+
+[96mMessage:[0m "Padma, kids yoga summer camps are trending, aur aa..."
+  Specificity            [[92m██████████████████[2m░░[0m] [92m 9/10[0m
+  Category Fit           [[92m████████████████[2m░░░░[0m] [92m 8/10[0m
+  Merchant Fit           [[92m██████████████████[2m░░[0m] [92m 9/10[0m
+  Decision Quality       [[92m██████████████████[2m░░[0m] [92m 9/10[0m
+  Engagement             [[92m██████████████████[2m░░[0m] [92m 9/10[0m
+
+  [1mTOTAL: 44/50[0m
+[94m[INFO][0m Batch 5: 1 actions (2111ms)
+[35m[LLM][0m Analyzing message...
+
+[96mMessage:[0m "Vikas, aapka Sunrise Medicos abhi Google par unver..."
+  Specificity            [[92m████████████████[2m░░░░[0m] [92m 8/10[0m
+  Category Fit           [[92m██████████████████[2m░░[0m] [92m 9/10[0m
+  Merchant Fit           [[92m██████████████████[2m░░[0m] [92m 9/10[0m
+  Decision Quality       [[92m████████████████[2m░░░░[0m] [92m 8/10[0m
+  Engagement             [[92m██████████████[2m░░░░░░[0m] [92m 7/10[0m
+
+  [1mTOTAL: 41/50[0m
+
+[96m[1m--- FINAL SUMMARY ---[0m
+
+[94m[INFO][0m Messages scored: 10
+
+  Avg Specificity        [[92m████████████████[2m░░░░[0m] [92m 8/10[0m
+  Avg Category Fit       [[92m████████████████[2m░░░░[0m] [92m 8/10[0m
+  Avg Merchant Fit       [[92m████████████████[2m░░░░[0m] [92m 8/10[0m
+  Avg Decision Quality   [[92m████████████████[2m░░░░[0m] [92m 8/10[0m
+  Avg Engagement         [[92m████████████████[2m░░░░[0m] [92m 8/10[0m
+
+[1m  AVERAGE SCORE: 40/50 (80%)[0m
+
+  [92mEXCELLENT[0m
