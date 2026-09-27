@@ -57,8 +57,32 @@ def merchant_flags(merchant_id: str | None) -> dict:
     key = merchant_id or "_unknown"
     with _lock:
         if key not in _merchant_flags:
-            _merchant_flags[key] = {"opted_out": False, "auto_reply_streak": 0, "last_auto_text": None}
+            _merchant_flags[key] = {"opted_out": False, "auto_reply_streak": 0, "last_auto_text": None,
+                                    "wait_until": None, "sent_bodies": []}
         return _merchant_flags[key]
+
+
+def active_conversation(recipient_key: str) -> dict | None:
+    """An open (not ended) conversation with this merchant/customer, if any."""
+    with _lock:
+        for conv in _conversations.values():
+            key = conv.get("customer_id") or conv.get("merchant_id")
+            if key == recipient_key and conv["status"] != "ended":
+                return conv
+    return None
+
+
+_sent_suppression_keys: set[str] = set()
+
+
+def was_sent(suppression_key: str) -> bool:
+    with _lock:
+        return suppression_key in _sent_suppression_keys
+
+
+def mark_sent(suppression_key: str):
+    with _lock:
+        _sent_suppression_keys.add(suppression_key)
 
 
 def is_opted_out(merchant_id: str | None) -> bool:
@@ -69,3 +93,4 @@ def clear():
     with _lock:
         _conversations.clear()
         _merchant_flags.clear()
+        _sent_suppression_keys.clear()

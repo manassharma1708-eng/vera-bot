@@ -1,4 +1,5 @@
 import json
+import os
 import time
 from typing import Any
 
@@ -7,9 +8,17 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
+import logging
+
 from app import conversations
+from app.llm import configured_providers
 from app.reply_brain import handle_reply
+from app.reply_writer import write_reply
 from app.store import VALID_SCOPES, store
+from app.tick_engine import run_tick
+from app.timeutil import plus_seconds
+
+log = logging.getLogger("uvicorn.error")
 
 app = FastAPI(title="Vera Bot")
 START = time.time()
@@ -30,12 +39,12 @@ async def healthz():
 @app.get("/v1/metadata")
 async def metadata():
     return {
-        "team_name": "MANAS SHARMA",                 # <-- change
-        "team_members": ["MANAS SHARMA"],            # <-- change
-        "model": "tbd",                           # we'll fill this in Step 5
+        "team_name": os.getenv("TEAM_NAME", "YOUR NAME"),           # set in .env
+        "team_members": [os.getenv("TEAM_NAME", "YOUR NAME")],
+        "model": ", ".join(f"{p}:{m}" for p, m in configured_providers()) or "template-only",
         "approach": "Deterministic fact-sheet extraction + LLM composer with post-validation",
-        "contact_email": "manassharma1708@gmail.com.com",       # <-- change
-        "version": "0.3.0",
+        "contact_email": os.getenv("CONTACT_EMAIL", "you@example.com"),   # set in .env
+        "version": "0.7.0",
         "submitted_at": "2026-04-26T08:00:00Z",
     }
 
@@ -91,11 +100,23 @@ async def push_context(body: ContextBody):
     }
 
 
-# ---------- Temporary stub (replaced in Step 7) ----------
+# ---------- Tick ----------
+
+class TickBody(BaseModel):
+    now: str | None = None
+    available_triggers: list[str] = []
+
 
 @app.post("/v1/tick")
-async def tick(request: Request):
-    return {"actions": []}
+async def tick(body: TickBody):
+    try:
+        result = await run_tick(body.now or "", body.available_triggers)
+        for reason in result.get("_skipped", []):
+            log.info("tick skip: %s", reason)
+        return {"actions": result["actions"]}
+    except Exception as exc:   # never break the judge's tick
+        log.exception("tick failed: %s", exc)
+        return {"actions": []}
 
 
 # ---------- Reply ----------
@@ -113,8 +134,24 @@ class ReplyBody(BaseModel):
 @app.post("/v1/reply")
 async def reply(body: ReplyBody):
     try:
-        return handle_reply(body.conversation_id, body.merchant_id, body.customer_id,
-                            body.from_role, body.message, body.turn_number)
+        result = handle_reply(body.conversation_id, body.merchant_id, body.customer_id,
+                              body.from_role, body.message, body.turn_number)
+        conv = conversations.get_or_create(body.conversation_id)
+
+        # Open question / engaged reply: try a grounded LLM answer, keep the rule-based one as fallback
+        intent = result.pop("_llm_upgrade", None)
+        if intent:
+            better = await write_reply(conv, body.message, intent)
+            if better:
+                conv["bot_bodies"][-1] = better["body"]
+                result.update(better)
+
+        # Remember "wait" so the tick doesn't message this merchant again too soon
+        if result.get("action") == "wait":
+            until = plus_seconds(body.received_at, result.get("wait_seconds", 0))
+            if until:
+                conversations.merchant_flags(conv.get("merchant_id"))["wait_until"] = until.isoformat()
+        return result
     except Exception as exc:  # never return a 500 to the judge
         return {"action": "wait", "wait_seconds": 3600,
                 "rationale": f"Internal error handled safely ({type(exc).__name__}); backing off."}

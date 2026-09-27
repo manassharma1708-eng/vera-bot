@@ -290,6 +290,8 @@ def build_facts(category: dict | None, merchant: dict | None,
     # ---- pick the anchor: strongest trigger fact first, else strongest merchant fact
     candidates.sort(key=lambda c: -c[0])
     anchor = candidates[0][1] if candidates else (lines[0] if lines else "")
+    merchant_anchor = next((c[1] for c in candidates
+                            if not c[1].startswith(("WHY NOW", "DIGEST", "Customer:"))), None)
 
     # ---- placeholder trigger: the "why now" is really the anchor, so the next action must match it
     next_action = NEXT_ACTION.get(kind, "prepare the next step for you")
@@ -334,6 +336,9 @@ def build_facts(category: dict | None, merchant: dict | None,
         "is_placeholder": placeholder,
         "trigger_payload": {} if placeholder else payload,
         "business_name": ident.get("name"),
+        "active_offers": active,
+        "merchant_anchor": merchant_anchor,
+        "customer_name": ((customer or {}).get("identity") or {}).get("name"),
         "send_blockers": blockers,
         "warnings": warnings,
         "allowed_numbers": sorted(allowed),

@@ -124,7 +124,22 @@ def build_prompt(f: dict) -> str:
 
 # ------------------------------------------------------------------ fallback
 
+HUMANIZE = [
+    (r"^Merchant has NO active offers$", "you don't have an active offer on your profile right now"),
+    (r"^Google Business Profile is NOT verified$", "your Google profile isn't verified yet"),
+    (r"^Review theme '([^']+)' \(neg\), (\d+) mentions in 30 days.*$", r"\2 reviews in the last 30 days mention '\1'"),
+    (r"^Profile CTR is ([\d.]+%) vs peer average ([\d.]+%) \(below peers\)$",
+     r"only \1 of people who see your profile take action, vs \2 for similar businesses"),
+    (r"^(\w+) changed -(\d+%) in the last 7 days$", lambda m: f"{m.group(1).lower()} are down {m.group(2)} in the last 7 days"),
+    (r"^(\w+) changed \+(\d+%) in the last 7 days$", lambda m: f"{m.group(1).lower()} are up {m.group(2)} in the last 7 days"),
+    (r"^Subscription expired (\d+) days ago$", r"your subscription lapsed \1 days ago"),
+]
+
+
 def _plain_anchor(anchor: str) -> str:
+    for pattern, repl in HUMANIZE:
+        if re.match(pattern, anchor or ""):
+            return re.sub(pattern, repl, anchor)
     text = re.sub(r"^(WHY NOW \([^)]*\):|DIGEST ITEM:)\s*", "", anchor or "").strip()
     text = re.sub(r"\(source: [^)]*\)", "", text)
     return text.replace("; ", ", ").strip().rstrip(".,")
@@ -149,6 +164,9 @@ def fallback_message(f: dict) -> dict:
     ask = f"Want me to {f['next_action']}? Reply YES and I'll start."
     body = None
 
+    offer = (f.get("active_offers") or [None])[0]
+    business = f.get("business_name") or "the team"
+
     if item.get("title"):
         body = f"{name}, worth a look: {item['title']} ({item.get('source', 'this week')}). "
         if item.get("actionable"):
@@ -168,9 +186,49 @@ def fallback_message(f: dict) -> dict:
     elif kind == "curious_ask_due":
         body = (f"{name}, quick question — which service are customers asking for most this week? "
                 f"I'll turn your answer into a Google post and a ready WhatsApp reply.")
+    elif kind == "active_planning_intent" and p.get("intent_topic"):
+        body = (f"{name}, picking up on your {str(p['intent_topic']).replace('_', ' ')} idea — "
+                f"I can build a starter draft{' around your ' + offer if offer else ''} for you to edit. "
+                f"Reply YES and I'll share it here.")
+    elif kind == "ipl_match_today" and p.get("match"):
+        weekend = p.get("is_weeknight") is False
+        body = (f"{name}, {p['match']} tonight{' at ' + p['venue'] if p.get('venue') else ''}. "
+                f"{'Weekend match, so most fans will watch at home — a delivery push makes sense' if weekend else 'Good night for a match-night push'}"
+                f"{' with your ' + offer if offer else ''}. {ask}")
+    elif kind == "gbp_unverified":
+        uplift = f" — verified profiles see about {_pct(p['estimated_uplift_pct'])} more visibility" if p.get("estimated_uplift_pct") else ""
+        path = f" via {str(p['verification_path']).replace('_', ' ')}" if p.get("verification_path") else ""
+        body = f"{name}, your Google profile isn't verified yet{uplift}. It can be done{path}. {ask}"
+    elif kind == "recall_due" and p.get("available_slots"):
+        slots = " or ".join(s.get("label", "") for s in p["available_slots"][:2] if isinstance(s, dict))
+        body = (f"Hi {name}, {business} here. Your {str(p.get('service_due', 'check-up')).replace('_', ' ')} is due"
+                f"{' — ' + offer if offer else ''}. We have {slots}. Reply 1 or 2 to book, or tell us a time that suits you.")
+        return {"body": body, "cta": "multi_choice_slot", "topic": "recall booking",
+                "rationale": "Deterministic fact-only template using the real due service, slots and active offer."}
+    elif kind == "chronic_refill_due" and p.get("molecule_list"):
+        meds = ", ".join(p["molecule_list"])
+        runs_out = str(p.get("stock_runs_out_iso", ""))[:10]
+        body = (f"Namaste {name}, {business} here. Your medicines ({meds}) run out on {runs_out}. "
+                f"Same pack ready{' — ' + offer if offer else ''}. Reply CONFIRM and we'll prepare the refill.")
+        return {"body": body, "cta": "binary_confirm_cancel", "topic": "chronic refill",
+                "rationale": "Deterministic fact-only template using the real molecules, run-out date and active offer."}
+    elif kind in ("customer_lapsed_soft", "customer_lapsed_hard") and f["send_as"] == "merchant_on_behalf":
+        days = p.get("days_since_last_visit")
+        body = (f"Hi {name}, {business} here. {'It has been ' + str(days) + ' days — no' if days else 'No'}"
+                f" pressure, we'd simply love to see you again"
+                f"{'. ' + offer + ' is on right now' if offer else ''}. Reply YES and we'll hold a spot for you.")
+    elif kind == "festival_upcoming" and p.get("festival"):
+        days = p.get("days_until")
+        early = isinstance(days, (int, float)) and days > 60
+        body = (f"{name}, {p['festival']} is {str(days) + ' days' if days else 'coming up'} away"
+                f"{' — early, but the right time to plan festive packages' if early else ''}. {ask}")
+    elif kind == "category_seasonal" and p.get("trends"):
+        shifts = ", ".join(str(t).replace("_", " ").replace(" demand ", " ") + "%" for t in p["trends"][:3])
+        body = f"{name}, seasonal demand across pharmacies is shifting ({shifts}). {ask}"
+    elif f.get("merchant_anchor") and f["send_as"] == "vera" and (f.get("is_placeholder") or kind == "dormant_with_vera"):
+        body = f"{name}, one thing I noticed on your profile — {_plain_anchor(f['merchant_anchor'])}. {ask}"
 
     if body is None and f["send_as"] == "merchant_on_behalf":
-        business = f.get("business_name") or "the team"
         body = f"Hi {name}, {business} here. We'd love to see you again soon — reply YES and we'll share the next available slots."
     if body is None:
         body = f"{name}, quick one — {_plain_anchor(f['anchor'])}. {ask}"

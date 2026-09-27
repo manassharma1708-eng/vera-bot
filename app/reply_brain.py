@@ -300,5 +300,7 @@ def handle_reply(conversation_id: str, merchant_id: str | None, customer_id: str
             "I can have it ready today. One YES from you and I'll begin.",
         ]
     body = _pick(options, conv, seed)
-    return _send(conv, body, "binary_yes_no",
-                 f"Merchant {intent}; moving to a single low-friction next step (LLM answer added in Step 5).")
+    result = _send(conv, body, "binary_yes_no",
+                   f"Merchant {intent}; moving to a single low-friction next step.")
+    result["_llm_upgrade"] = intent       # main.py will try a grounded LLM answer, keeping this as fallback
+    return result
