@@ -7,6 +7,8 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
+from app import conversations
+from app.reply_brain import handle_reply
 from app.store import VALID_SCOPES, store
 
 app = FastAPI(title="Vera Bot")
@@ -28,12 +30,12 @@ async def healthz():
 @app.get("/v1/metadata")
 async def metadata():
     return {
-        "team_name": "Manas Sharma",                 # <-- change
-        "team_members": ["Manas Sharma"],         # <-- change
+        "team_name": "MANAS SHARMA",                 # <-- change
+        "team_members": ["MANAS SHARMA"],            # <-- change
         "model": "tbd",                           # we'll fill this in Step 5
         "approach": "Deterministic fact-sheet extraction + LLM composer with post-validation",
-        "contact_email": "manassharma1708@gmail.com",       # <-- change
-        "version": "0.2.0",
+        "contact_email": "manassharma1708@gmail.com.com",       # <-- change
+        "version": "0.3.0",
         "submitted_at": "2026-04-26T08:00:00Z",
     }
 
@@ -89,19 +91,37 @@ async def push_context(body: ContextBody):
     }
 
 
-# ---------- Temporary stubs (replaced in Steps 3 and 7) ----------
+# ---------- Temporary stub (replaced in Step 7) ----------
 
 @app.post("/v1/tick")
 async def tick(request: Request):
     return {"actions": []}
 
 
+# ---------- Reply ----------
+
+class ReplyBody(BaseModel):
+    conversation_id: str
+    merchant_id: str | None = None
+    customer_id: str | None = None
+    from_role: str = "merchant"
+    message: str = ""
+    received_at: str | None = None
+    turn_number: int = 0
+
+
 @app.post("/v1/reply")
-async def reply(request: Request):
-    return {"action": "wait", "wait_seconds": 1800, "rationale": "Reply handler not built yet"}
+async def reply(body: ReplyBody):
+    try:
+        return handle_reply(body.conversation_id, body.merchant_id, body.customer_id,
+                            body.from_role, body.message, body.turn_number)
+    except Exception as exc:  # never return a 500 to the judge
+        return {"action": "wait", "wait_seconds": 3600,
+                "rationale": f"Internal error handled safely ({type(exc).__name__}); backing off."}
 
 
 @app.post("/v1/teardown")
 async def teardown():
     store.clear()
+    conversations.clear()
     return {"ok": True}
