@@ -75,7 +75,7 @@ NEXT_ACTION = {
     "regulation_change": "prepare a 3-point compliance checklist for your setup",
     "cde_opportunity": "share the registration details and add it to your calendar",
     "supply_alert": "draft the customer note and a replacement-pickup plan",
-    "perf_dip": "draft a Google post and refresh your active offer to win back calls",
+    "perf_dip": "draft a Google post and set up one strong offer to win back calls",
     "seasonal_perf_dip": "draft a member-retention message for this quieter period",
     "perf_spike": "draft a follow-up post while the momentum lasts",
     "competitor_opened": "draft a Google post that highlights what makes you different",
@@ -296,7 +296,7 @@ def build_facts(category: dict | None, merchant: dict | None,
     for line in lines:
         allowed |= numbers_in(line)
 
-        return {
+    return {
         "kind": kind,
         "trigger_id": trigger.get("id"),
         "urgency": trigger.get("urgency"),

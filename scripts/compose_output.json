@@ -1,0 +1,440 @@
+{
+  "T01": {
+    "body": "Suresh ji, following up on your message about the corporate bulk package, here is a starter draft around your active Weekday Lunch Thali @ ₹149. Aapke thali quality par already 22 positive mentions hain last 30 days mein, so we can pitch this ₹149 thali directly to Indiranagar offices. Chalega, should I draft the full plan for you to edit?",
+    "cta": "binary_yes_no",
+    "send_as": "vera",
+    "suppression_key": "planning:m_006:corp_thali:2026-W17",
+    "rationale": "Responded to merchant's active planning intent by anchoring on their active Weekday Lunch Thali @ ₹149 and backing it with 22 positive thali reviews.",
+    "template_name": "vera_active_planning_intent_v1",
+    "template_params": [
+      "Suresh",
+      "Suresh ji, following up on your message about the corporate bulk package, here is a starter draft around your active Weekday Lunch Thali @ ₹149. Aapke thali quality par already 22 positive mentions hain last 30 days mein, so we can pitch this ₹149 thali directly to Indiranagar offices.",
+      "Chalega, should I draft the full plan for you to edit?"
+    ],
+    "topic": "Corporate bulk thali starter draft",
+    "next_action": "draft the full plan for you to edit",
+    "source": "gemini:gemini-flash-latest"
+  },
+  "T02": {
+    "body": "Padma, since kids yoga summer camps are trending, let's launch a 4-week program with 3 classes/week for ages 7-12 at ₹2,499. Given your high instructor quality ratings, this will be a hit. Should I draft the post and carousel for you now?",
+    "cta": "binary_yes_no",
+    "send_as": "vera",
+    "suppression_key": "planning:m_008:kids_yoga:2026-W17",
+    "rationale": "I used the merchant's active planning intent to propose a concrete structure for the kids yoga program, leveraging their strong instructor reputation to build confidence.",
+    "template_name": "vera_active_planning_intent_v1",
+    "template_params": [
+      "Padma",
+      "Padma, since kids yoga summer camps are trending, let's launch a 4-week program with 3 classes/week for ages 7-12 at ₹2,499. Given your high instructor quality ratings, this will be a hit.",
+      "Should I draft the post and carousel for you now?"
+    ],
+    "topic": "Kids yoga program launch",
+    "next_action": "draft the full plan for you to edit",
+    "source": "gemini:gemini-3.1-flash-lite"
+  },
+  "T03": {
+    "skipped": [
+      "customer consent ['promotional_offers'] does not cover 'appointment_tomorrow'"
+    ]
+  },
+  "T04": {
+    "skipped": [
+      "customer consent ['promotional_offers'] does not cover 'appointment_tomorrow'"
+    ]
+  },
+  "T05": {
+    "body": "Ramesh, summer 2026 is here and we are seeing a sharp 45% jump in antifungal demand and 40% in ORS at Apollo Health Plus. To capture this shift, we should update your shelf to highlight these essentials while reducing focus on cold and cough meds. Should I draft a seasonal shelf and offer plan for you?",
+    "cta": "binary_yes_no",
+    "send_as": "vera",
+    "suppression_key": "season:summer:m_009:2026",
+    "rationale": "I used the seasonal demand shift as the anchor to provide actionable advice for the merchant's inventory, leveraging their high repeat customer rate to drive sales.",
+    "template_name": "vera_category_seasonal_v1",
+    "template_params": [
+      "Ramesh",
+      "Ramesh, summer 2026 is here and we are seeing a sharp 45% jump in antifungal demand and 40% in ORS at Apollo Health Plus. To capture this shift, we should update your shelf to highlight these essentials while reducing focus on cold and cough meds.",
+      "Should I draft a seasonal shelf and offer plan for you?"
+    ],
+    "topic": "Seasonal inventory and shelf update",
+    "next_action": "draft a shelf and offer plan for the season",
+    "source": "gemini:gemini-3.1-flash-lite"
+  },
+  "T06": {
+    "body": "Dr. Meera, IDA Delhi is hosting a session on 'Digital impressions — 2026 state of the art' on May 2nd at 7:00 PM. This session covers CAD/CAM workflow ROI, which is perfect for upgrading your practice's tech. It offers 2 credits and is free for IDA members (₹500 for non-members).",
+    "cta": "binary_yes_no",
+    "send_as": "vera",
+    "suppression_key": "cde:dentists:2026-05-02",
+    "rationale": "I used the IDA event as the anchor to provide professional development value, aligning with the peer-clinical tone for a dentist. The CTA asks if they want the registration details to help them secure their spot.",
+    "template_name": "vera_cde_opportunity_v1",
+    "template_params": [
+      "Dr. Meera",
+      "Dr. Meera, IDA Delhi is hosting a session on 'Digital impressions — 2026 state of the art' on May 2nd at 7:00 PM. This session covers CAD/CAM workflow ROI, which is perfect for upgrading your practice's tech.",
+      "It offers 2 credits and is free for IDA members (₹500 for non-members)."
+    ],
+    "topic": "IDA Delhi digital impressions session",
+    "next_action": "share the registration details and add it to your calendar",
+    "source": "gemini:gemini-3.1-flash-lite"
+  },
+  "T07": {
+    "body": "Namaste Mr. Sharma, Apollo Health Plus Pharmacy se. Aapki metformin, atorvastatin aur telmisartan ki dawaiyan 28 April ko khatam ho rahi hain. Kya hum aapke saved address par morning delivery ke liye order prepare kar dein?",
+    "cta": "binary_yes_no",
+    "send_as": "merchant_on_behalf",
+    "suppression_key": "refill:c_013_grandfather_for_m009:2026-04",
+    "rationale": "The customer's chronic medication stock is expiring soon, so I used the refill due signal to prompt a timely reorder while offering the convenience of home delivery.",
+    "template_name": "merchant_chronic_refill_due_v1",
+    "template_params": [
+      "Mr. Sharma",
+      "Namaste Mr. Sharma, Apollo Health Plus Pharmacy se. Aapki metformin, atorvastatin aur telmisartan ki dawaiyan 28 April ko khatam ho rahi hain.",
+      "Kya hum aapke saved address par morning delivery ke liye order prepare kar dein?"
+    ],
+    "topic": "Chronic medication refill reminder",
+    "next_action": "prepare the next step for you",
+    "source": "gemini:gemini-3.1-flash-lite"
+  },
+  "T08": {
+    "skipped": [
+      "trigger kind 'chronic_refill_due' does not fit category 'dentists'",
+      "customer consent ['promotional_offers'] does not cover 'chronic_refill_due'"
+    ]
+  },
+  "T09": {
+    "body": "Dr. Meera, Smile Studio opened just 1.3 km away on April 8th and is offering Dental Cleaning at ₹199. Since your current cleaning offer is at ₹299, we should highlight your patient-focused care to stand out. Shall I draft a post emphasizing your clinical approach to attract more patients?",
+    "cta": "binary_yes_no",
+    "send_as": "vera",
+    "suppression_key": "competitor:m_001:smile_studio",
+    "rationale": "I used the competitor opening as the anchor to create urgency and suggested a differentiation strategy based on her positive 'doctor manner' reviews to counter the competitor's lower price point.",
+    "template_name": "vera_competitor_opened_v1",
+    "template_params": [
+      "Dr. Meera",
+      "Dr. Meera, Smile Studio opened just 1.3 km away on April 8th and is offering Dental Cleaning at ₹199. Since your current cleaning offer is at ₹299, we should highlight your patient-focused care to stand out.",
+      "Shall I draft a post emphasizing your clinical approach to attract more patients?"
+    ],
+    "topic": "Competitor opening and differentiation",
+    "next_action": "draft a Google post that highlights what makes you different",
+    "source": "gemini:gemini-3.1-flash-lite"
+  },
+  "T10": {
+    "body": "Suresh, aapke weekend busy hone ki wajah se customers ko wait karna pad raha hai, jo ki ek achha sign hai par thoda manage karna hoga. Aapka Weekday Lunch Thali @ ₹149 kaafi popular hai, toh kyun na hum weekend ke liye ek special offer draft karein taaki crowd manage ho sake? Should I draft a post to highlight your unique weekend experience?",
+    "cta": "binary_yes_no",
+    "send_as": "vera",
+    "suppression_key": "competitor_opened:m_006_southindiancafe_restaurant_bangalore:gen_56",
+    "rationale": "I used the 'weekend busy' negative review theme as an anchor to pivot towards growth management, leveraging the merchant's existing popularity to suggest a strategic post.",
+    "template_name": "vera_competitor_opened_v1",
+    "template_params": [
+      "Suresh",
+      "Suresh, aapke weekend busy hone ki wajah se customers ko wait karna pad raha hai, jo ki ek achha sign hai par thoda manage karna hoga. Aapka Weekday Lunch Thali @ ₹149 kaafi popular hai, toh kyun na hum weekend ke liye ek special offer draft karein taaki crowd manage ho sake?",
+      "Should I draft a post to highlight your unique weekend experience?"
+    ],
+    "topic": "Managing weekend crowd growth",
+    "next_action": "draft a Google post that highlights what makes you different",
+    "source": "gemini:gemini-3.1-flash-lite"
+  },
+  "T11": {
+    "body": "Lakshmi, aapke salon ki profile par views aur calls last 7 days mein kaafi badhe hain. Is week aapke yahan sabse zyada demand kis service ki hai? Bataiye, main uske liye ek Google post aur ready WhatsApp reply draft kar deti hoon.",
+    "cta": "open_ended",
+    "send_as": "vera",
+    "suppression_key": "curious_ask:m_003:2026-W17",
+    "rationale": "I used the 'growing views and calls' signal to validate their current momentum and asked a specific question to help them leverage this traffic with a ready-to-use Google post.",
+    "template_name": "vera_curious_ask_due_v1",
+    "template_params": [
+      "Lakshmi",
+      "Lakshmi, aapke salon ki profile par views aur calls last 7 days mein kaafi badhe hain. Is week aapke yahan sabse zyada demand kis service ki hai?",
+      "Bataiye, main uske liye ek Google post aur ready WhatsApp reply draft kar deti hoon."
+    ],
+    "topic": "Identifying high-demand service",
+    "next_action": "turn your answer into a Google post and a ready WhatsApp reply",
+    "source": "gemini:gemini-3.1-flash-lite"
+  },
+  "T12": {
+    "body": "Suresh, customers are mentioning that Mylari South Indian Cafe gets quite crowded on weekends. Since you have a solid 42% repeat customer rate, would you like me to draft a Google post and a quick WhatsApp reply to help manage the weekend rush better?",
+    "cta": "binary_yes_no",
+    "send_as": "vera",
+    "suppression_key": "curious_ask_due:m_006_southindiancafe_restaurant_bangalore:gen_96",
+    "rationale": "I used the 'weekend busy' negative review theme as the anchor to offer a practical solution for managing customer expectations. This leverages the merchant's high repeat customer base to build a helpful, operator-to-operator connection.",
+    "template_name": "vera_curious_ask_due_v1",
+    "template_params": [
+      "Suresh",
+      "Suresh, customers are mentioning that Mylari South Indian Cafe gets quite crowded on weekends.",
+      "Since you have a solid 42% repeat customer rate, would you like me to draft a Google post and a quick WhatsApp reply to help manage the weekend rush better?"
+    ],
+    "topic": "Managing weekend crowd feedback",
+    "next_action": "turn your answer into a Google post and a ready WhatsApp reply",
+    "source": "gemini:gemini-3.1-flash-lite"
+  },
+  "T13": {
+    "body": "Hi Rashmi, PowerHouse Fitness here! It has been 57 days since we last saw you, and we miss your energy during our evening sessions. We would love to help you get back on track with your weight loss goals after your solid 5-month start. Would you like to restart your routine with 3 free trial classes?",
+    "cta": "binary_yes_no",
+    "send_as": "merchant_on_behalf",
+    "suppression_key": "winback:c_010_rashmi_for_m007",
+    "rationale": "I used the 57-day lapse as the anchor to re-engage the member, referencing their previous weight loss goal to build rapport. The tone is encouraging and coach-like, offering a low-friction way to return.",
+    "template_name": "merchant_customer_lapsed_hard_v1",
+    "template_params": [
+      "Rashmi",
+      "Hi Rashmi, PowerHouse Fitness here! It has been 57 days since we last saw you, and we miss your energy during our evening sessions. We would love to help you get back on track with your weight loss goals after your solid 5-month start.",
+      "Would you like to restart your routine with 3 free trial classes?"
+    ],
+    "topic": "Winback lapsed gym member",
+    "next_action": "prepare the next step for you",
+    "source": "gemini:gemini-3.1-flash-lite"
+  },
+  "T14": {
+    "body": "Hi Reyansh, it has been a while since your last visit to Asha Dental Care in Sector 17. We would love to see you again for a routine check-up to ensure your dental health remains in top shape. Would you like to book a slot for a scaling session this week?",
+    "cta": "binary_yes_no",
+    "send_as": "merchant_on_behalf",
+    "suppression_key": "customer_lapsed_soft:m_014_dr_asha_dentist_chandigarh:gen_71",
+    "rationale": "I used the lapsed customer signal to prompt a return visit for a routine scaling, maintaining a professional and collegial tone appropriate for a dental clinic.",
+    "template_name": "merchant_customer_lapsed_soft_v1",
+    "template_params": [
+      "Reyansh",
+      "Hi Reyansh, it has been a while since your last visit to Asha Dental Care in Sector 17. We would love to see you again for a routine check-up to ensure your dental health remains in top shape.",
+      "Would you like to book a slot for a scaling session this week?"
+    ],
+    "topic": "Re-engaging lapsed dental patient",
+    "next_action": "prepare the next step for you",
+    "source": "gemini:gemini-3.1-flash-lite"
+  },
+  "T15": {
+    "body": "Reyansh, Daily Care Medicos yahan Alambagh mein. Aapke last visit ko kaafi time ho gaya hai, humein aapki health ka khayal hai. Humare paas abhi fresh stock mein branded aur generic medicines ka wide range available hai.",
+    "cta": "binary_yes_no",
+    "send_as": "merchant_on_behalf",
+    "suppression_key": "customer_lapsed_soft:m_049_komal_pharmacie_lucknow:gen_72",
+    "rationale": "The message uses the lapsed customer trigger to re-engage Reyansh by highlighting the pharmacy's availability of fresh stock, maintaining a trustworthy and professional tone suitable for a neighbourhood pharmacist.",
+    "template_name": "merchant_customer_lapsed_soft_v1",
+    "template_params": [
+      "Reyansh",
+      "Reyansh, Daily Care Medicos yahan Alambagh mein. Aapke last visit ko kaafi time ho gaya hai, humein aapki health ka khayal hai.",
+      "Humare paas abhi fresh stock mein branded aur generic medicines ka wide range available hai."
+    ],
+    "topic": "Reconnecting with lapsed customer",
+    "next_action": "prepare the next step for you",
+    "source": "gemini:gemini-3.1-flash-lite"
+  },
+  "T16": {
+    "body": "Anjali, aapke salon ke profile views pichle 7 dino mein 12% kam hue hain. Peer salons ke comparison mein aapka CTR abhi 2.2% hai, jise hum aasani se improve kar sakte hain. Kya main aapke profile ke liye ek quick fix share karun?",
+    "cta": "binary_yes_no",
+    "send_as": "vera",
+    "suppression_key": "dormant:m_004:30d",
+    "rationale": "I used the performance dip signal to create urgency and offered a low-effort, expert-led solution to re-engage the merchant after 38 days of dormancy.",
+    "template_name": "vera_dormant_with_vera_v1",
+    "template_params": [
+      "Anjali",
+      "Anjali, aapke salon ke profile views pichle 7 dino mein 12% kam hue hain. Peer salons ke comparison mein aapka CTR abhi 2.2% hai, jise hum aasani se improve kar sakte hain.",
+      "Kya main aapke profile ke liye ek quick fix share karun?"
+    ],
+    "topic": "Improving salon profile performance",
+    "next_action": "run a quick profile check and share the top fix",
+    "source": "gemini:gemini-3.1-flash-lite"
+  },
+  "T17": {
+    "body": "Anand, aapke cafe ke liye calls last 7 days mein 21% kam ho gaye hain. Lagta hai customers ko connect karne mein thodi dikkat aa rahi hai. Main aapke profile ka quick check karke top fix suggest kar sakti hoon, chalega?",
+    "cta": "binary_yes_no",
+    "send_as": "vera",
+    "suppression_key": "dormant_with_vera:m_029_anand_restaurant_chandigarh:gen_46",
+    "rationale": "I used the -21% call drop as the anchor to create urgency. The tone is practical and peer-to-peer, offering a low-effort solution to help the merchant recover.",
+    "template_name": "vera_dormant_with_vera_v1",
+    "template_params": [
+      "Anand",
+      "Anand, aapke cafe ke liye calls last 7 days mein 21% kam ho gaye hain. Lagta hai customers ko connect karne mein thodi dikkat aa rahi hai.",
+      "Main aapke profile ka quick check karke top fix suggest kar sakti hoon, chalega?"
+    ],
+    "topic": "Declining call volume alert",
+    "next_action": "run a quick profile check and share the top fix",
+    "source": "gemini:gemini-3.1-flash-lite"
+  },
+  "T18": {
+    "body": "Lakshmi, Diwali is still 188 days away, but it is the perfect time to start planning your salon's festive packages to stay ahead. Your views are up 14% this week, so let's build a strategy that keeps this momentum going for the season. Should I draft a festive service plan for your profile?",
+    "cta": "binary_yes_no",
+    "send_as": "vera",
+    "suppression_key": "festival:diwali:2026:m_003",
+    "rationale": "The event is far away (188 days), so I framed the message around early planning rather than a promo push, leveraging the merchant's current growth in views.",
+    "template_name": "vera_festival_upcoming_v1",
+    "template_params": [
+      "Lakshmi",
+      "Lakshmi, Diwali is still 188 days away, but it is the perfect time to start planning your salon's festive packages to stay ahead. Your views are up 14% this week, so let's build a strategy that keeps this momentum going for the season.",
+      "Should I draft a festive service plan for your profile?"
+    ],
+    "topic": "Early Diwali festive planning",
+    "next_action": "draft a festival post and offer for your profile",
+    "source": "gemini:gemini-3.1-flash-lite"
+  },
+  "T19": {
+    "body": "Pooja, Bend & Burn has seen 5,934 views this month, but you currently have zero active offers to convert that traffic. With the festive season approaching, setting up a special package now is the best way to boost your membership numbers. Shall I draft a 'First Month @ ₹499' offer for your profile to get things moving?",
+    "cta": "binary_yes_no",
+    "send_as": "vera",
+    "suppression_key": "festival_upcoming:m_037_pooja_gym_bangalore:gen_61",
+    "rationale": "I used the lack of active offers as the anchor to drive urgency for the upcoming festive season, positioning the offer as a tool to convert the high volume of profile views.",
+    "template_name": "vera_festival_upcoming_v1",
+    "template_params": [
+      "Pooja",
+      "Pooja, Bend & Burn has seen 5,934 views this month, but you currently have zero active offers to convert that traffic. With the festive season approaching, setting up a special package now is the best way to boost your membership numbers.",
+      "Shall I draft a 'First Month @ ₹499' offer for your profile to get things moving?"
+    ],
+    "topic": "Activating offers for festive growth",
+    "next_action": "draft a festival post and offer for your profile",
+    "source": "gemini:gemini-3.1-flash-lite"
+  },
+  "T20": {
+    "body": "Vikas, aapke Sunrise Medicos ka Google Business Profile abhi unverified hai, jisse aap 30% tak zyada customers miss kar rahe hain. Verification ke liye bas ek postcard ya phone call ki zaroorat hai. Kya main aapko step-by-step process samjha doon?",
+    "cta": "binary_yes_no",
+    "send_as": "vera",
+    "suppression_key": "unverified:m_010",
+    "rationale": "I used the unverified status as the anchor to highlight the 30% potential uplift, focusing on the immediate benefit of verification to drive growth for the pharmacy.",
+    "template_name": "vera_gbp_unverified_v1",
+    "template_params": [
+      "Vikas",
+      "Vikas, aapke Sunrise Medicos ka Google Business Profile abhi unverified hai, jisse aap 30% tak zyada customers miss kar rahe hain. Verification ke liye bas ek postcard ya phone call ki zaroorat hai.",
+      "Kya main aapko step-by-step process samjha doon?"
+    ],
+    "topic": "Google Business Profile verification",
+    "next_action": "walk you through verification step by step",
+    "source": "gemini:gemini-3.1-flash-lite"
+  },
+  "T21": {
+    "body": "Suresh, DC vs MI ka match aaj Arun Jaitley Stadium mein hai, toh Delhi mein crowd kaafi rahega. SK Pizza Junction par aaj ki excitement ka fayda uthane ke liye hum ek special match-night banner aur Insta story draft kar sakte hain. Kya main aapke liye ye ready kar doon?",
+    "cta": "binary_yes_no",
+    "send_as": "vera",
+    "suppression_key": "ipl:m_005:2026-04-26",
+    "rationale": "Used the IPL match signal to create urgency for a weekend match night, leveraging the merchant's need to boost visibility since their CTR is currently below peer average.",
+    "template_name": "vera_ipl_match_today_v1",
+    "template_params": [
+      "Suresh",
+      "Suresh, DC vs MI ka match aaj Arun Jaitley Stadium mein hai, toh Delhi mein crowd kaafi rahega. SK Pizza Junction par aaj ki excitement ka fayda uthane ke liye hum ek special match-night banner aur Insta story draft kar sakte hain.",
+      "Kya main aapke liye ye ready kar doon?"
+    ],
+    "topic": "IPL match night promotion",
+    "next_action": "draft tonight's delivery banner and an Insta story",
+    "source": "gemini:gemini-3.1-flash-lite"
+  },
+  "T22": {
+    "body": "Suresh, aapke Mylari South Indian Cafe par 145 reviews ho gaye hain aur aap 150 ka milestone cross karne ke bahut kareeb hain. Aapka CTR 3.2% hai jo peers se kaafi behtar hai, toh happy customers se review maangne ka ye sahi time hai. Kya main ek thank-you post draft karun jisse aapke customers review dene ke liye motivate ho jayein?",
+    "cta": "binary_yes_no",
+    "send_as": "vera",
+    "suppression_key": "milestone:m_006:reviews_150",
+    "rationale": "I used the milestone reached signal (145/150 reviews) to create urgency and leveraged the merchant's high CTR as social proof to encourage them to push for more reviews.",
+    "template_name": "vera_milestone_reached_v1",
+    "template_params": [
+      "Suresh",
+      "Suresh, aapke Mylari South Indian Cafe par 145 reviews ho gaye hain aur aap 150 ka milestone cross karne ke bahut kareeb hain. Aapka CTR 3.2% hai jo peers se kaafi behtar hai, toh happy customers se review maangne ka ye sahi time hai.",
+      "Kya main ek thank-you post draft karun jisse aapke customers review dene ke liye motivate ho jayein?"
+    ],
+    "topic": "Milestone review count nudge",
+    "next_action": "draft a thank-you post that nudges happy customers to review",
+    "source": "gemini:gemini-3.1-flash-lite"
+  },
+  "T23": {
+    "body": "Mukesh, aapke profile views toh 14% badhe hain, par last 7 days mein calls 24% gir gaye hain. Aapke CTR 5.3% hai jo peers se kaafi behtar hai, bas thoda push chahiye. Kya main ek thank-you post draft karun jo happy customers ko review dene ke liye nudge kare?",
+    "cta": "binary_yes_no",
+    "send_as": "vera",
+    "suppression_key": "milestone_reached:m_032_mukesh_restaurant_pune:gen_41",
+    "rationale": "I used the drop in calls as the anchor to create urgency and leveraged the merchant's strong CTR as social proof to suggest a review-nudge strategy to convert views into action.",
+    "template_name": "vera_milestone_reached_v1",
+    "template_params": [
+      "Mukesh",
+      "Mukesh, aapke profile views toh 14% badhe hain, par last 7 days mein calls 24% gir gaye hain. Aapke CTR 5.3% hai jo peers se kaafi behtar hai, bas thoda push chahiye.",
+      "Kya main ek thank-you post draft karun jo happy customers ko review dene ke liye nudge kare?"
+    ],
+    "topic": "Boosting customer calls",
+    "next_action": "draft a thank-you post that nudges happy customers to review",
+    "source": "gemini:gemini-3.1-flash-lite"
+  },
+  "T24": {
+    "body": "Dr. Bharat, aapke clinic ke calls last 7 days mein 50% drop huye hain. Aapka CTR 1.8% hai jo peer average 3% se kaafi kam hai, aur abhi koi active offer bhi nahi chal raha. Main aapke liye ek attractive offer set karke naya Google post draft kar doon taaki patient flow wapas badh sake?",
+    "cta": "binary_yes_no",
+    "send_as": "vera",
+    "suppression_key": "perf_dip:m_002_bharat_dentist_mumbai:calls:2026-W17",
+    "rationale": "I used the 50% call drop as the anchor to create urgency and linked it to the low CTR and lack of offers as the primary levers for recovery.",
+    "template_name": "vera_perf_dip_v1",
+    "template_params": [
+      "Dr. Bharat",
+      "Dr. Bharat, aapke clinic ke calls last 7 days mein 50% drop huye hain. Aapka CTR 1.8% hai jo peer average 3% se kaafi kam hai, aur abhi koi active offer bhi nahi chal raha.",
+      "Main aapke liye ek attractive offer set karke naya Google post draft kar doon taaki patient flow wapas badh sake?"
+    ],
+    "topic": "Addressing severe call volume dip",
+    "next_action": "draft a Google post and set up one strong offer to win back calls",
+    "source": "gemini:gemini-3.1-flash-lite"
+  },
+  "T25": {
+    "body": "Sushma, aapke salon ke views toh badh rahe hain, par abhi koi active offer na hone ki wajah se customers calls mein convert nahi ho rahe. Ek attractive offer jaise 'Hair Spa @ ₹499' add karne se aapke leads turant badh sakte hain. Kya main aapke liye ek naya offer set kar doon?",
+    "cta": "binary_yes_no",
+    "send_as": "vera",
+    "suppression_key": "perf_dip:m_023_sushma_salon_pune:gen_31",
+    "rationale": "I used the 'no active offers' anchor to address the conversion gap despite good views. The lever is a concrete offer suggestion to drive immediate action.",
+    "template_name": "vera_perf_dip_v1",
+    "template_params": [
+      "Sushma",
+      "Sushma, aapke salon ke views toh badh rahe hain, par abhi koi active offer na hone ki wajah se customers calls mein convert nahi ho rahe. Ek attractive offer jaise 'Hair Spa @ ₹499' add karne se aapke leads turant badh sakte hain.",
+      "Kya main aapke liye ek naya offer set kar doon?"
+    ],
+    "topic": "Activating offers to boost leads",
+    "next_action": "draft a Google post and set up one strong offer to win back calls",
+    "source": "gemini:gemini-3.1-flash-lite"
+  },
+  "T26": {
+    "body": "Padma, aapke studio par calls mein 15% ka jump aaya hai last 7 days mein, aur yeh sab aapke kids yoga post ka kamaal hai! Momentum badhiya hai, toh kyun na hum isse aur push karein? Should I draft a follow-up post to keep this flow going?",
+    "cta": "binary_yes_no",
+    "send_as": "vera",
+    "suppression_key": "perf_spike:m_008:calls:2026-W17",
+    "rationale": "I used the +15% call spike as the anchor to build urgency, linking it directly to the successful kids yoga post to encourage immediate action while the momentum is high.",
+    "template_name": "vera_perf_spike_v1",
+    "template_params": [
+      "Padma",
+      "Padma, aapke studio par calls mein 15% ka jump aaya hai last 7 days mein, aur yeh sab aapke kids yoga post ka kamaal hai! Momentum badhiya hai, toh kyun na hum isse aur push karein?",
+      "Should I draft a follow-up post to keep this flow going?"
+    ],
+    "topic": "Capitalizing on increased call volume",
+    "next_action": "draft a follow-up post while the momentum lasts",
+    "source": "gemini:gemini-3.1-flash-lite"
+  },
+  "T27": {
+    "body": "Vikas, aapke Sunrise Medicos ko last 30 days mein 720 views aur 32 directions mile hain, lekin aapka Google Business Profile abhi tak verified nahi hai. Verification se local customers aap tak aasani se pahunch payenge. Kya main aapki profile verify karne mein madad karun?",
+    "cta": "binary_yes_no",
+    "send_as": "vera",
+    "suppression_key": "perf_spike:m_010_sunrisepharm_pharmacy_lucknow:gen_36",
+    "rationale": "I chose the unverified GBP signal as the anchor because it is a critical blocker for local visibility. I used the 'why now' lever by highlighting the current traffic volume to show the missed potential of being unverified.",
+    "template_name": "vera_perf_spike_v1",
+    "template_params": [
+      "Vikas",
+      "Vikas, aapke Sunrise Medicos ko last 30 days mein 720 views aur 32 directions mile hain, lekin aapka Google Business Profile abhi tak verified nahi hai. Verification se local customers aap tak aasani se pahunch payenge.",
+      "Kya main aapki profile verify karne mein madad karun?"
+    ],
+    "topic": "Google Business Profile verification",
+    "next_action": "draft a follow-up post while the momentum lasts",
+    "source": "gemini:gemini-3.1-flash-lite"
+  },
+  "T28": {
+    "body": "Hi Priya, Dr. Meera's Dental Clinic here. Aapka 6-month dental cleaning session due ho gaya hai, so let's get your smile back on track with our special offer of ₹299. Would you like to book a slot for Wed 5 Nov at 6pm or Thu 6 Nov at 5pm?",
+    "cta": "multi_choice_slot",
+    "send_as": "merchant_on_behalf",
+    "suppression_key": "recall:c_001_priya_for_m001:6mo",
+    "rationale": "The anchor is the 6-month recall due date. I used the specific available slots and the active cleaning offer to drive immediate re-engagement.",
+    "template_name": "merchant_recall_due_v1",
+    "template_params": [
+      "Priya",
+      "Hi Priya, Dr. Meera's Dental Clinic here. Aapka 6-month dental cleaning session due ho gaya hai, so let's get your smile back on track with our special offer of ₹299.",
+      "Would you like to book a slot for Wed 5 Nov at 6pm or Thu 6 Nov at 5pm?"
+    ],
+    "topic": "Dental cleaning recall appointment",
+    "next_action": "prepare the next step for you",
+    "source": "gemini:gemini-3.1-flash-lite"
+  },
+  "T29": {
+    "skipped": [
+      "trigger kind 'recall_due' does not fit category 'gyms'",
+      "customer consent ['promotional_offers'] does not cover 'recall_due'"
+    ]
+  },
+  "T30": {
+    "body": "Dr. Meera, the Dental Council of India has revised radiograph dose limits effective 15th Dec 2026, and you need to audit your setup before this deadline. The new limit drops to 1.0 mSv per IOPA, meaning D-speed films will no longer comply, though RVG sensors remain safe. Should I send over a 3-point compliance checklist to help you update your SOPs?",
+    "cta": "binary_yes_no",
+    "send_as": "vera",
+    "suppression_key": "compliance:dci_radiograph:2026",
+    "rationale": "I used the DCI regulation change as the anchor to create professional urgency. The tone is collegial and clinical, focusing on the specific technical shift required for her clinic's X-ray setup.",
+    "template_name": "vera_regulation_change_v1",
+    "template_params": [
+      "Dr. Meera",
+      "Dr. Meera, the Dental Council of India has revised radiograph dose limits effective 15th Dec 2026, and you need to audit your setup before this deadline. The new limit drops to 1.0 mSv per IOPA, meaning D-speed films will no longer comply, though RVG sensors remain safe.",
+      "Should I send over a 3-point compliance checklist to help you update your SOPs?"
+    ],
+    "topic": "DCI radiograph compliance update",
+    "next_action": "prepare a 3-point compliance checklist for your setup",
+    "source": "gemini:gemini-3.1-flash-lite"
+  }
+}

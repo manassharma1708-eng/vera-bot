@@ -2,3 +2,4 @@ __pycache__/
 .env
 venv/
 challenge/expanded/
+.llm_cache.json
